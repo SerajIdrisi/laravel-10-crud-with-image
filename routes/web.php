@@ -28,4 +28,8 @@ Route::get('/images', [StudentsController::class,'imageupload'])->name('imagedat
 Route::get('/editdata/{id}', [StudentsController::class, 'edit'])->name('editdata');
 Route::post('/updatedata/{id}', [StudentsController::class, 'update'])->name('updatedata');
 Route::get('/delete/{id}', [StudentsController::class, 'delete'])->name('delete');
+Route::post('/autocomplete', [StudentsController::class, 'autocomplete'])->name('auto');
+Route::post('/filter', [StudentsController::class, 'filterdata'])->name('filter');
+
+
 

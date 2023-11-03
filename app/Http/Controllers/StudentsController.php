@@ -17,14 +17,13 @@ class StudentsController extends Controller
         $data->username = $request->uname;
         $data->password = $request->pass;
         $data->phone = $request->mobile;
-        
-        if($request->hasFile('img'))
-        {
+
+        if ($request->hasFile('img')) {
             $file = $request->file('img');
             $extension = $file->getClientOriginalExtension();
-            $filename = time().'.'. $extension;
+            $filename = time() . '.' . $extension;
             $file->move('upload/images', $filename);
-            $data->image=$filename;
+            $data->image = $filename;
         }
         $data->save();
         return redirect()->route("storedata");
@@ -40,33 +39,54 @@ class StudentsController extends Controller
         return view('editstudent', compact('editdata'));
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $updatedata = Students::find($id);
         $updatedata->username = $request->uname;
         $updatedata->password = $request->pass;
         $updatedata->phone = $request->mobile;
-        if($request->hasFile('img'))
-        {
+        if ($request->hasFile('img')) {
             $file = $request->file('img');
             $extension = $file->getClientOriginalExtension();
-            $filename = time().'.'. $extension;
+            $filename = time() . '.' . $extension;
             $file->move('upload/images', $filename);
-            $updatedata->image=$filename;
+            $updatedata->image = $filename;
         }
-       
+
         $updatedata->save();
         return redirect()->route('storedata');
 
     }
-     public function delete($id)
-     {
+    public function delete($id)
+    {
         $deletedata = Students::find($id);
         $deletedata->delete();
         return redirect()->route('storedata');
-     }
-}   
+    }
 
- 
+    public function autocomplete(request $request)
+    {
+        $first = $request->input('searchbox');
+        $autolist = Students::where('username', 'LIKE', "%$first%")->pluck('username');
+        $jsondatadecode = json_decode($autolist);
+        if (is_array($jsondatadecode)) {
+            // echo 'hurrrey data came';exit;
+        }
+        return response()->json($autolist);
+    }
+
+    public function filterdata(request $request)
+    {
+        // echo 'filter controller called ';exit;
+        $filterinput = $request->input("searchbox");
+        $filterdata = Students::where('username', 'LIKE', "%$filterinput%")->pluck('username');
+        return response()->json($filterdata);
+    }
+
+
+}
+
+
 
 
 
