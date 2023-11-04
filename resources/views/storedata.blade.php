@@ -20,11 +20,12 @@
             padding-left: 10px;
             position: absolute;
             width: 100%;
-            max-height: 150px;
+            max-height: 100%;
             overflow-y: auto;
             border: 1px solid #ccc;
             background-color: white;
             z-index: 1;
+            cursor:pointer;
         }
 
         .autocomplete:hover {
@@ -47,7 +48,7 @@
             <form action="{{route('filter')}}" method="post" class="mb-2">
                 @csrf
                 <div class="form-group d-flex">
-                    <input type="text" name="searchbox" value="" id="search" class="form-control" placeholder="Search!">
+                    <input type="text" name="searchbox" id="search" class="form-control" placeholder="Search!">
                     <button type="submit" name="filtersearch" class="btn btn-dark text-light">Search</button>
                     <div id="searchautocomplete" class="autocomplete"></div>
                 </div>
@@ -90,22 +91,16 @@
     {{--autocplete start here--}}
     <script>
         $(document).ready(function() {
-            $('#search').keyup(function() {
-                let StudentsInputValue = $('#search').val();
-                if (StudentsInputValue != "") {
-                    let _token = $('input[name="_token"]').val();
-                    // alert(_token);
+            $('#search').on('keyup', function() {
+                let val = $(this).val();
+                let _token = $('input[name="_token"]').val();
+                if (val && _token != "") {
                     $.ajax({
                         url: "{{ route('auto') }}",
                         method: "POST",
-                        data: {
-                            searchbox: StudentsInputValue,
-                            _token: _token
-                        },
-                        success: function(response) {
-                            console.log(response);
-                            $('#searchautocomplete').html(response);
-                            // $('#searchautocomplete').show();
+                        data: {searchbox: val, _token: _token},
+                        success: function(data) {
+                            $('#searchautocomplete').html(data);
                         },
                         error: function(xhr, status, error) {
                             console.log(error);
@@ -117,6 +112,7 @@
             });
         });
     </script>
+
     {{--autocomplete end--}}
 
 
@@ -130,7 +126,7 @@
                     $.ajax({
                         url : '{{route('filter')}}',
                         type : 'post',
-                        data : '{searchbox: inputdata, _token: _token}'
+                        data : '{searchbox: inputdata, _token: _token, filtersera}'
                         datatype : 'json',
                     })
                     $.each(data, function(index, item)){

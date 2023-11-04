@@ -30,7 +30,7 @@ class StudentsController extends Controller
     }
     public function store()
     {
-        $datastore = Students::paginate(10);
+        $datastore = Students::paginate(5);
         return view("storedata", compact('datastore'));
     }
     public function edit($id)
@@ -67,20 +67,37 @@ class StudentsController extends Controller
     public function autocomplete(request $request)
     {
         $first = $request->input('searchbox');
-        $autolist = Students::where('username', 'LIKE', "%$first%")->pluck('username');
-        $jsondatadecode = json_decode($autolist);
-        if (is_array($jsondatadecode)) {
-            // echo 'hurrrey data came';exit;
+        if ($request->ajax()) {
+            $data = Students::where('username', 'LIKE', "%".$first."%")->get();
+            $output = "";
+            if (count($data) > 0 ){
+                $output = '<ul class="" style="display : block; position:relative; z-nidex:1">';
+                foreach ($data as $row){
+                    $output .= '<li class="list-group-item">'.$row->username.'</li>';
+                }
+                $output .= "</ul>";
+            }
+            else{
+                $output .= '<li class="list-group-item">No Data Found</li>';
+            }
+            return $output;
         }
-        return response()->json($autolist);
+        return view('storedata');
+        // $autolist = Students::where('username', 'LIKE', "%$first%")->pluck('username');
+        // $jsondatadecode = json_decode($autolist);
+        // if (is_array($jsondatadecode)) {
+        //     // echo 'hurrrey data came';exit;
+        // }
+        // return response()->json($jsondatadecode);
     }
 
     public function filterdata(request $request)
     {
-        // echo 'filter controller called ';exit;
+        // $datastore = Students::all();
         $filterinput = $request->input("searchbox");
-        $filterdata = Students::where('username', 'LIKE', "%$filterinput%")->pluck('username');
-        return response()->json($filterdata);
+        $datastore = Students::where('username', 'LIKE', "%$filterinput%")->pluck('username');
+        return response()->json($datastore);
+        // return view('storedata', compact('datastore'));
     }
 
 
